@@ -1,6 +1,4 @@
-To report a security issue, please email [vulnerability management team](talshapir@google.com)
-with a description of the issue, the steps you took to create the issue,
-affected versions, and, if known, mitigations for the issue. Our vulnerability
-management team will respond within 3 working days of your email. If the issue
-is confirmed as a vulnerability, we will open a Security Advisory. This project
-follows a 90 day disclosure timeline.
+To report a security issue, please use [https://g.co/vulnz](https://g.co/vulnz).
+We use g.co/vulnz for our intake, and do coordination and disclosure here on
+GitHub (including using GitHub Security Advisory). The Google Security Team will
+respond within 5 working days of your report on g.co/vulnz.
