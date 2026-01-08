@@ -29,16 +29,31 @@ predefined rubrics, safety constraints, and golden datasets.
 
 ## Quick Start
 
+If uv is not installed
+
 ```shell
-# 1. Install Vera
-uv pip install -e .
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+If it is installed make sure to use the latest version
+
+```shell
+uv self update  # or `pip3 install --upgrade uv`
+```
+
+Then install vera, the example plugin and run the test cases:
+
+```shell
+# 1. Install Vera and the example plugin
+uv venv --python 3.14
+uv pip install vera plugin_example/sql_query_assistant
+vera list
 
 # 2. Configure Gemini API Key and destination directory
 vera config -k
 vera config -d ./out
 
-# 3. Run an example evaluation
-uv pip install -e plugin_example/sql_query_assistant
+# 3. Run the example evaluation
 vera test
 ```
 

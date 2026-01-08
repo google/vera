@@ -25,7 +25,7 @@ source .venv/bin/activate
 Install the Vera engine in editable mode.
 
 ```shell
-uv pip install -e path/to/vera
+uv pip install path/to/vera
 ```
 
 ### 3. Install a Plugin
@@ -35,7 +35,7 @@ Assistant
 example.
 
 ```shell
-uv pip install -e plugin_example/sql_query_assistant
+uv pip install plugin_example/sql_query_assistant
 ```
 
 ## Quick Start
@@ -66,7 +66,7 @@ Follow these steps to run your first test:
 
 Lists all registered plugins currently installed and recognized by the system via entry points.
 
-### `vera eval`
+### `vera test`
 
 Evaluates installed features using the registered plugins.
 

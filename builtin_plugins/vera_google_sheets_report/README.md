@@ -20,7 +20,7 @@ into a single summary sheet.
 Ensure the plugin is installed in your environment:
 
 ```bash
-pip install -e builting_plugins/google_sheets_report
+pip install builting_plugins/google_sheets_report
 ```
 
 ## Configuration
