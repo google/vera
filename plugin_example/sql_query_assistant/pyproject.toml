@@ -1,7 +1,7 @@
 [project]
 name = "sql-query-assistant"
 version = "1.0.0"
-description = "Add your description here"
+description = "Example Vera implementation that provides tests for a SQL Query Assistant feature"
 readme = "README.md"
 authors = [
     { name = "Tal Shapir", email = "talshapir@google.com" },
