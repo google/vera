@@ -32,9 +32,9 @@ if TYPE_CHECKING:
 
 def test_handle_test_command_extra_args() -> None:
     handle_test_command_extra_args(["--gs-combine"])
-    assert CONFIG.gs_combine is True  # ty:ignore[unresolved-attribute]
+    assert CONFIG.gs_combine is True
     handle_test_command_extra_args([])
-    assert CONFIG.gs_combine is False  # ty:ignore[unresolved-attribute]
+    assert CONFIG.gs_combine is False
 
 
 def test_display_test_command_help(capsys: CaptureFixture[str]) -> None:
@@ -115,9 +115,9 @@ async def test_publish_results_no_combine(mock_client_class: MagicMock) -> None:
     mock_client = mock_client_class.return_value
     sheet_id: str = "123"
     creds_file: str = "creds.json"
-    CONFIG.gs_credentials = creds_file  # ty:ignore[unresolved-attribute]
-    CONFIG.gs_spreadsheet_id = sheet_id  # ty:ignore[unresolved-attribute]
-    CONFIG.gs_combine = False  # ty:ignore[unresolved-attribute]
+    CONFIG.gs_credentials = creds_file
+    CONFIG.gs_spreadsheet_id = sheet_id
+    CONFIG.gs_combine = False
 
     row = MagicMock()
     row.model_dump.return_value = {"Header1": "Value1"}
@@ -138,9 +138,9 @@ async def test_publish_results_combine(mock_client_class: MagicMock) -> None:
     mock_client = mock_client_class.return_value
     sheet_id: str = "123"
     creds_file: str = "creds.json"
-    CONFIG.gs_credentials = creds_file  # ty:ignore[unresolved-attribute]
-    CONFIG.gs_spreadsheet_id = sheet_id  # ty:ignore[unresolved-attribute]
-    CONFIG.gs_combine = True  # ty:ignore[unresolved-attribute]
+    CONFIG.gs_credentials = creds_file
+    CONFIG.gs_spreadsheet_id = sheet_id
+    CONFIG.gs_combine = True
 
     row = MagicMock()
     row.model_dump.return_value = {"Header1": "Value1"}
