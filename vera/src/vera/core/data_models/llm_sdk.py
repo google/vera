@@ -24,13 +24,10 @@ if TYPE_CHECKING:
     from types import TracebackType
 
 
-class LlmSdk[T: LlmConfig](AbstractAsyncContextManager, abc.ABC):
+class LlmSdk(AbstractAsyncContextManager, abc.ABC):
     @abc.abstractmethod
-    def __init__(self, llm_config: T) -> None:
+    def __init__[T: LlmConfig](self, llm_config: T) -> None:
         self.llm_config: T = llm_config
-
-    @overload
-    async def send_message(self, prompt: str, /) -> str: ...
 
     @overload
     async def send_message[T_Schema: BaseModel](

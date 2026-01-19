@@ -47,7 +47,7 @@ class TestConfig:
         ):
             mock_config = MagicMock(spec=VeraConfig)
             mock_config.report_name = "my_report"
-            mock_config.dst_dir = Path("/tmp")
+            mock_config.dst_dir = Path("/temp")
             mock_config.gemini_api_key = "key"
             mock_config.enable_csv_report = True
             mock_config.log_level = "INFO"
