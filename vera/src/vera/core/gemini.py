@@ -80,9 +80,9 @@ class GeminiConfig(LlmConfig):
         raise exceptions.ApiKeyNotFoundError(msg) from None
 
 
-class Gemini(LlmSdk):
-    def __init__(self, llm_config: GeminiConfig) -> None:
-        self.config: GeminiConfig = llm_config
+class Gemini(LlmSdk[GeminiConfig]):
+    def __init__(self, config: GeminiConfig) -> None:
+        super().__init__(config)
         self.client: genai.client.AsyncClient = genai.client.Client(api_key=self.config.api_key).aio
         self.model: str = self.config.model_name
         self.contents: list[Content] = []

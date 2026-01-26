@@ -52,7 +52,7 @@ async def llm_evaluation[T_Input: TestCaseInput, T_Output: TestCaseOutput](
     specs_path: anyio.Path = plugin_service.get_llm_specs_dir()
     specs: tuple[str, ...] = await plugin_service.get_spec_files(specs_dir=specs_path)
     llm_config: LlmConfig = plugin_service.get_llm_configuration()
-    async with plugin_service.get_llm_sdk(llm_config=llm_config) as llm:
+    async with plugin_service.get_llm_sdk(config=llm_config) as llm:
         llm.add_system_prompts_to_session(*specs)
 
         resources_dir: anyio.Path = plugin_service.get_resources_dir()
@@ -75,8 +75,8 @@ def get_llm_configuration() -> GeminiConfig:
 
 
 @hook_impl
-def get_llm_sdk(llm_config: GeminiConfig) -> Gemini:
-    return Gemini(llm_config)
+def get_llm_sdk(config: GeminiConfig) -> Gemini:
+    return Gemini(config)
 
 
 @hook_impl
