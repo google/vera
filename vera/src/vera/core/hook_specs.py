@@ -101,7 +101,7 @@ class PluginService[T_Input: TestCaseInput, T_Output: TestCaseOutput, T_Row: Csv
 
     @staticmethod
     @hook_spec(firstresult=True)
-    def get_llm_sdk(llm_config: LlmConfig) -> LlmSdk:
+    def get_llm_sdk(config: LlmConfig) -> LlmSdk:
         """Returns the LLM context manager object."""
 
     @staticmethod
