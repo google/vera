@@ -61,6 +61,9 @@ Vera evaluates your AI feature in four steps:
    ```shell
    # Install the core engine from the local directory
    uv pip install vera
+
+   # Or from GitHub
+   uv add "git+https://github.com/google/vera.git#subdirectory=vera"
    ```
 
 3. **Install an Example Plugin**:
