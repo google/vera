@@ -8,7 +8,7 @@ dependencies = [
     "anyio>=4.8.0",
     "pydantic>=2.12.5",
     "pyyaml>=6.0.1",
-    "vera>=1.0.2",
+    "vera>=1.0.0",
 ]
 
 [project.entry-points.vera]
