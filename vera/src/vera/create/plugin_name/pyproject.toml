@@ -17,3 +17,6 @@ $plugin_name = "$plugin_name.plugin_impl"
 [build-system]
 requires = ["uv_build>=0.9.11,<0.10.0"]
 build-backend = "uv_build"
+
+[tool.uv.sources]
+vera = { git = "https://github.com/google/vera.git", subdirectory = "vera" }
