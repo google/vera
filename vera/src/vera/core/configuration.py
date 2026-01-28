@@ -33,6 +33,7 @@ class VeraConfig[T](BaseModel):
     report_name: str = "report"
     enable_csv_report: bool = True
     log_level: str = "INFO"
+    verbose: bool = False
 
     @classmethod
     def get(cls) -> Self:

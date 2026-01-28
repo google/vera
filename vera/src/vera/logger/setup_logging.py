@@ -38,6 +38,8 @@ def setup_logging(level: str = "INFO", *, verbose: bool = False) -> None:
         return
 
     logging.config.dictConfig(config)
+    _set_other_noisy_loggers_level(verbose=verbose)
+
     queue_handler: logging.handlers.QueueHandler | None = cast(
         "logging.handlers.QueueHandler", logging.getHandlerByName("queue_handler")
     )
@@ -52,3 +54,9 @@ def setup_logging(level: str = "INFO", *, verbose: bool = False) -> None:
 
 def _is_running_in_pytest() -> bool:
     return "PYTEST_CURRENT_TEST" in os.environ
+
+
+def _set_other_noisy_loggers_level(*, verbose: bool) -> None:
+    extra_level: int = logging.NOTSET if verbose else logging.WARNING
+    for logger_name in ("google", "google_genai", "urllib3", "httpx"):
+        logging.getLogger(logger_name).setLevel(extra_level)

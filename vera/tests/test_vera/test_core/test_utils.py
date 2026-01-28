@@ -67,5 +67,5 @@ def test_syncify() -> None:
         await asyncio.sleep(0.01)
         return x + y
 
-    result = async_func(1, 2)  # ty:ignore[too-many-positional-arguments]
+    result: int = async_func(1, 2)
     assert result == 3

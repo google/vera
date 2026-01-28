@@ -15,19 +15,21 @@
 import asyncio
 import logging
 from pathlib import Path  # noqa: TC003
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any, override
 
 import typer
-from rich.console import Console
+from rich.console import Console, ConsoleRenderable
 from rich.progress import (
     BarColumn,
-    MofNCompleteColumn,
     Progress,
+    ProgressColumn,
     SpinnerColumn,
+    Task,
     TaskID,
     TextColumn,
     TimeElapsedColumn,
 )
+from rich.text import Text
 
 from vera.core import plugin_service, utils
 from vera.core.configuration import CONFIG
@@ -47,6 +49,14 @@ if TYPE_CHECKING:
 
 app: typer.Typer = typer.Typer(help="Test features.")
 logger: logging.Logger = logging.getLogger(PROJECT_NAME)
+
+
+class SmartProgressColumn(ProgressColumn):
+    @override
+    def render(self, task: Task) -> ConsoleRenderable:
+        if task.description == "[bold green]Total Progress[/bold green]":
+            return Text(f"{int(task.completed)}/{int(task.total or 0)}")
+        return Text(f"{task.percentage:>3.0f}%")
 
 
 @app.command(
@@ -103,14 +113,16 @@ async def vtest_feature(  # noqa: PLR0913
     if not create_csv:
         CONFIG.enable_csv_report = False
 
+    CONFIG.verbose = verbose
+
     test_cases: list[TestCase[Any]] = list(_get_filtered_test_cases(test_tags, pc))
     progress: Progress = Progress(
         SpinnerColumn(),
         TextColumn(text_format="[progress.description]{task.description}"),
         BarColumn(),
-        MofNCompleteColumn(),
+        SmartProgressColumn(),
         TimeElapsedColumn(),
-        disable=quiet or verbose,
+        disable=quiet,
         transient=True,
     )
     testing_services: list[TestingService] = []
@@ -143,9 +155,11 @@ async def vtest_feature(  # noqa: PLR0913
             console.rule("[bold]Summary[/bold]")
             all_runs_rows: list[list[Any]] = [es.csv_rows for es in testing_services]
             all_failed_tests: list[tuple[Any, Exception]] = []
+            all_durations: list[dict[int, dict[str, float]]] = []
             for es in testing_services:
                 all_failed_tests.extend(es.failed_test_cases)
-            ReportSummary(all_runs_rows, all_failed_tests).display()
+                all_durations.append(es.durations)
+            ReportSummary(all_runs_rows, all_failed_tests, all_durations).display()
 
 
 def _handle_logging(*, quiet: bool, verbose: bool) -> None:

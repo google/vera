@@ -20,6 +20,7 @@ from rich.table import Table
 
 from vera import ScoreRange
 from vera.core import utils
+from vera.core.configuration import CONFIG
 
 if TYPE_CHECKING:
     from vera.core.data_models.csv import CsvRow
@@ -27,22 +28,29 @@ if TYPE_CHECKING:
 
 type _TestCaseIdToScoreRange = dict[int, ScoreRange]
 type _TestCaseIdToResults = dict[int, list[int | float]]
+type _TestCaseIdToDurations = dict[int, list[dict[str, float]]]
 
 ERR_MSG_MIN_MEN: int = 200
 
 
 class ReportSummary:
-    __slots__ = ("all_runs_rows", "failed_tests", "ranges", "results")
+    __slots__ = ("all_durations", "all_runs_rows", "failed_tests", "ranges", "results")
 
     def __init__(
         self,
         all_runs_rows: list[list[Any]],
         failed_tests: list[tuple[Any, Exception]] | None = None,
+        all_durations: list[dict[int, dict[str, float]]] | None = None,
     ) -> None:
         self.all_runs_rows: list[list[CsvRow]] = all_runs_rows
         self.results: _TestCaseIdToResults = defaultdict(list)
         self.ranges: _TestCaseIdToScoreRange = {}
         self.failed_tests: list[tuple[Any, Exception]] = failed_tests or []
+        self.all_durations: _TestCaseIdToDurations = defaultdict(list)
+        if all_durations:
+            for run_durations in all_durations:
+                for test_id, duration_data in run_durations.items():
+                    self.all_durations[test_id].append(duration_data)
 
     def display(self) -> None:
         if not self.all_runs_rows and not self.failed_tests:
@@ -52,11 +60,9 @@ class ReportSummary:
         if self.failed_tests:
             self._display_failures(console)
 
-        if not self.all_runs_rows or not self.all_runs_rows[0]:
-            return
-
         self._set_run_results_and_ranges()
         table: Table = self._build_summary_table()
+        # Ensure the table is visible
         console.print(table)
         if (score := self._get_overall_score()) is not None:
             console.print(score)
@@ -73,9 +79,18 @@ class ReportSummary:
         table: Table = Table(title="Test Summary", header_style="bold magenta")
         table.add_column("Test ID", style="cyan")
         table.add_column("Avg Score", justify="right")
+
+        if CONFIG.verbose:
+            table.add_column("Setup", justify="right")
+            table.add_column("Feature", justify="right")
+            table.add_column("Static", justify="right")
+            table.add_column("LLM", justify="right")
+
+        table.add_column("Total Time", justify="right")
+
         if len(self.all_runs_rows) > 1:
-            table.add_column("Min", justify="right")
-            table.add_column("Max", justify="right")
+            table.add_column("Min Score", justify="right")
+            table.add_column("Max Score", justify="right")
             table.add_column("Runs", justify="right")
 
         for test_id in sorted(self.results):
@@ -88,18 +103,40 @@ class ReportSummary:
 
             avg_score_str = f"[{color}]{avg_score:.2f}[/{color}]"
 
+            row_data = self._get_row_data(avg_score_str, test_id)
+
             if len(self.all_runs_rows) > 1:
-                table.add_row(
-                    str(test_id),
-                    avg_score_str,
-                    f"{min(scores):.2f}",
-                    f"{max(scores):.2f}",
-                    str(len(scores)),
-                )
-            else:
-                table.add_row(str(test_id), avg_score_str)
+                row_data.extend([f"{min(scores):.2f}", f"{max(scores):.2f}", str(len(scores))])
+
+            table.add_row(*row_data)
 
         return table
+
+    def _get_row_data(self, avg_score_str: str, test_id: int) -> list[str | Any]:
+        durations_list = self.all_durations.get(test_id, [])
+        if durations_list:
+            avg_total = sum(d.get("total", 0) for d in durations_list) / len(durations_list)
+            total_time_str = f"{avg_total:.2f}s"
+            if CONFIG.verbose:
+                avg_setup = sum(d.get("setup", 0) for d in durations_list) / len(durations_list)
+                avg_feature = sum(d.get("feature", 0) for d in durations_list) / len(durations_list)
+                avg_static = sum(d.get("static_eval", 0) for d in durations_list) / len(
+                    durations_list
+                )
+                avg_llm = sum(d.get("llm_eval", 0) for d in durations_list) / len(durations_list)
+                time_cols = [
+                    f"{avg_setup:.2f}s",
+                    f"{avg_feature:.2f}s",
+                    f"{avg_static:.2f}s",
+                    f"{avg_llm:.2f}s",
+                ]
+            else:
+                time_cols = []
+        else:
+            total_time_str = "N/A"
+            time_cols = ["N/A"] * 4 if CONFIG.verbose else []
+
+        return [str(test_id), avg_score_str, *time_cols, total_time_str]
 
     def _display_failures(self, console: Console) -> None:
         table: Table = Table(title="Failed Tests", header_style="bold red", style="red")

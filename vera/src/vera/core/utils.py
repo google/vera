@@ -49,11 +49,11 @@ def filter_taggables_by_tags[T: Taggable](taggables: Iterable[T], tags: Iterable
     return [t for t in taggables if set(t.tags).intersection(tags_list)]
 
 
-def syncify[T_Ret](
-    f: Callable[..., Coroutine[Any, Any, T_Ret]],
-) -> Callable[[...], T_Ret]:
+def syncify[**P, R](
+    f: Callable[P, Coroutine[Any, Any, R]],
+) -> Callable[P, R]:
     @functools.wraps(f)
-    def _run_async(*args: Any, **kwargs: Any) -> T_Ret:  # noqa: ANN401
+    def _run_async(*args: Any, **kwargs: Any) -> R:  # noqa: ANN401
         return asyncio.run(f(*args, **kwargs))
 
     return _run_async
