@@ -1,6 +1,6 @@
 [project]
 name = "vera"
-version = "1.0.1"
+version = "1.0.2"
 description = "Powerful AI Test Engine for Features"
 readme = "README.md"
 authors = [
@@ -46,6 +46,7 @@ Repository = "https://github.com/google/vera"
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
+    "pytest-mock>=3.15.1",
     "ruff>=0.14.13",
     "ty>=0.0.12",
 ]

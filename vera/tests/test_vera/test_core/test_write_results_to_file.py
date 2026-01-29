@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from typing import TYPE_CHECKING, Self, override
+from typing import TYPE_CHECKING, Any, Self, override
 from unittest.mock import patch
 
 import pytest
 from anyio import Path
 
+from vera import CONFIG
 from vera.core.configuration import VeraConfig
 from vera.core.data_models.csv import CsvRow, ScoreRange
 from vera.core.write_results_to_file import (
@@ -30,7 +30,7 @@ from vera.project_name import PROJECT_NAME
 if TYPE_CHECKING:
     import pathlib
 
-    from pyasn1.type.univ import Any
+    from pytest_mock import MockerFixture
 
 from pydantic import ConfigDict
 
@@ -52,7 +52,7 @@ class MockRow(CsvRow):
     @classmethod
     @override
     def from_columns(cls, **kwargs: Any) -> Self:  # ty:ignore[invalid-method-override]
-        return cls(**kwargs)  # ty:ignore[invalid-argument-type]
+        return cls(**kwargs)
 
 
 @pytest.mark.anyio
@@ -66,8 +66,9 @@ async def test_get_report_dir_from_config(tmp_path: pathlib.Path) -> None:
 
 
 @pytest.mark.anyio
-async def test_create_report_file(tmp_path: pathlib.Path) -> None:
+async def test_create_report_file(tmp_path: pathlib.Path, mocker: MockerFixture) -> None:
     report_dir = Path(str(tmp_path))
+    mocker.patch.object(CONFIG, "report_name", "report")
 
     file1 = await create_report_file(report_dir)
     assert file1.name == "report_1.csv"

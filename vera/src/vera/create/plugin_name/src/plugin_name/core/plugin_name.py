@@ -15,12 +15,9 @@
 import anyio
 
 from vera import TestCase
-from .data_models import MyPluginInput, MyPluginOutput
+from .data_models import Input, Output
 
 
-async def run_my_feature(
-    test_case: TestCase[MyPluginInput],
-    resources_dir: anyio.Path,
-) -> MyPluginOutput:
+async def run_my_feature(test_case: TestCase[Input], resources_dir: anyio.Path) -> Output:
     """Run the actual feature with the input of the test case and return the output."""
-    return MyPluginOutput(response="Hello from plugin!")
+    return Output(response="Hello from plugin!")

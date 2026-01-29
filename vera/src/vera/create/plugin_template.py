@@ -39,11 +39,11 @@ def populate(template: Path, details: PluginDetails) -> None:
 
 
 def _change_template_names_glob(path: Path, /, name_to_change: str, new_name: str) -> None:
-    for dir_ in path.rglob(name_to_change):
-        dir_.rename(dir_.parent / new_name)
+    for p in path.rglob(f"{name_to_change}*"):
+        p.rename(p.parent / new_name)
 
-    for dir_ in path.rglob(f"test_{name_to_change}"):
-        dir_.rename(dir_.parent / f"test_{new_name}")
+    for p in path.rglob(f"test_{name_to_change}*"):
+        p.rename(p.parent / f"test_{new_name}")
 
 
 def _replace_template_placeholders(base_path: Path, details: PluginDetails) -> None:

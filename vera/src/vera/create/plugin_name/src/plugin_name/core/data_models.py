@@ -19,7 +19,7 @@ from pydantic import Field
 from vera import CsvColumn, CsvRow, ScoreRange, TestCase, TestCaseInput, TestCaseOutput
 
 
-class MyPluginInput(TestCaseInput):
+class Input(TestCaseInput):
     user_query: str
 
     @override
@@ -27,7 +27,7 @@ class MyPluginInput(TestCaseInput):
         return f"User Input: {self.user_query}"
 
 
-class MyPluginOutput(TestCaseOutput):
+class Output(TestCaseOutput):
     response: str
 
     @override
@@ -35,8 +35,8 @@ class MyPluginOutput(TestCaseOutput):
         return f"Model Response: {self.response}"
 
 
-class MyPluginTestCase(TestCase):
-    input: MyPluginInput
+class VeraTestCase(TestCase):
+    input: Input
 
 
 class LlmColumns(CsvColumn):
@@ -49,9 +49,7 @@ class StaticCheckColumns(CsvColumn):
     static_field_score_reason_1: str
 
 
-class MyPluginRow(
-    CsvRow[MyPluginInput, MyPluginOutput, LlmColumns, StaticCheckColumns]
-):
+class Row(CsvRow[Input, Output, LlmColumns, StaticCheckColumns]):
     name: Annotated[str, Field(alias="Test Case Name")]
     llm_field_score_1: int
     llm_field_score_reason_1: str
@@ -71,12 +69,12 @@ class MyPluginRow(
     @override
     def from_columns(
         cls,
-        test_case: TestCase[MyPluginInput],
-        test_output: MyPluginOutput,
+        test_case: TestCase[Input],
+        test_output: Output,
         llm_checks_columns: CsvColumn,
         static_checks_columns: CsvColumn,
     ) -> Self:
-        row = cls.model_validate(
+        row: Self = cls.model_validate(
             {
                 "identifier": test_case.id,
                 "name": test_case.name,
@@ -84,5 +82,5 @@ class MyPluginRow(
             },
             by_name=True,
         )
-        row.final_score = row.calculate_final_score()
+        row.final_score: float = row.calculate_final_score()
         return row

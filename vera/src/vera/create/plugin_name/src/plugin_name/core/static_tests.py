@@ -21,12 +21,17 @@ from .data_models import StaticCheckColumns
 if TYPE_CHECKING:
     from vera import TestCase
 
-    from .data_models import MyPluginInput, MyPluginOutput
+    from .data_models import Input, Output
 
 
 @dataclass(slots=True, frozen=True)
 class StaticTester:
-    test_case: TestCase[MyPluginInput]
-    test_output: MyPluginOutput
+    test_case: TestCase[Input]
+    test_output: Output
 
-    def run_static_tests(self) -> StaticCheckColumns: ...
+    def run_static_tests(self) -> StaticCheckColumns:
+        """Run programmatic checks on the output (e.g., JSON validation, keyword checks)."""
+        return StaticCheckColumns(
+            static_field_score_1=1,
+            static_field_score_reason_1="Reason for score 1",
+        )
