@@ -21,7 +21,7 @@ import yaml
 
 import vera
 from vera import CsvColumn, TestCase
-from .core.data_models import MyPluginInput, MyPluginOutput, MyPluginRow, MyPluginTestCase
+from .core.data_models import Input, Output, Row, VeraTestCase
 from .core.${plugin_name} import run_my_feature
 from .core.static_tests import StaticTester
 
@@ -30,7 +30,7 @@ ASYNC_FEATURE_TESTS_DIR: anyio.Path = anyio.Path(__file__).parent / "feature_tes
 
 
 @vera.hook_impl
-def get_test_cases() -> Iterable[TestCase[MyPluginInput]]:
+def get_test_cases() -> Iterable[TestCase[Input]]:
     """Hook to load test cases. By default, it looks for feature_testing/test_cases.yaml."""
     # Example implementation:
     # import pathlib
@@ -41,14 +41,11 @@ def get_test_cases() -> Iterable[TestCase[MyPluginInput]]:
     test_cases_file: pathlib.Path = FEATURE_TESTS_DIR / "test_cases.yaml"
     file_content: str = test_cases_file.read_text(encoding="utf-8")
     test_cases: list[dict[str, Any]] = yaml.safe_load(file_content)
-    return [MyPluginTestCase(**tc) for tc in test_cases]
+    return [VeraTestCase(**tc) for tc in test_cases]
 
 
 @vera.hook_impl
-async def run_feature(
-    test_case: TestCase[MyPluginInput],
-    resources_dir: anyio.Path,
-) -> MyPluginOutput:
+async def run_feature(test_case: TestCase[Input], resources_dir: anyio.Path) -> Output:
     """
     Execute the feature being tested. This is where you call your LLM or API.
     """
@@ -58,18 +55,15 @@ async def run_feature(
 
 
 @vera.hook_impl
-def run_static_tests(
-    test_case: TestCase[MyPluginInput],
-    test_output: MyPluginOutput,
-) -> CsvColumn:
+def run_static_tests(test_case: TestCase[Input], test_output: Output) -> CsvColumn:
     """Perform programmatic checks on the output (e.g., JSON validation, keyword checks)."""
     return StaticTester(test_case, test_output).run_static_tests()
 
 
 @vera.hook_impl
-def get_csv_row_class() -> type[MyPluginRow]:
+def get_csv_row_class() -> type[Row]:
     """Return the Pydantic class used for a single row in the final CSV report."""
-    return MyPluginRow
+    return Row
 
 
 @vera.hook_impl

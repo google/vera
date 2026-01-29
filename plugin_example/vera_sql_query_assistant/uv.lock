@@ -615,7 +615,7 @@ wheels = [
 
 [[package]]
 name = "vera"
-version = "1.0.1"
+version = "1.0.2"
 source = { directory = "../../vera" }
 dependencies = [
     { name = "anyio" },
