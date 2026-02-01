@@ -24,8 +24,7 @@ Building reliable AI features is hard. Traditional unit tests struggle with the 
 ## Documentation
 
 - **[Installation and Usage](/docs/installation_and_usage.md)**: Setup guide and CLI reference.
-- **[Testing Philosophy](/docs/testing_philosophy.md)
-  **: Deep dive into "LLM-as-a-Judge" and Test Specs.
+- **[Testing Philosophy](/docs/testing_philosophy.md)**: Deep dive into "LLM-as-a-Judge" and Test Specs.
 - **[Plugin Development](/docs/plugin_development.md)**: How to build custom evaluation plugins.
 - **[Contributing](/docs/contributing.md)**: Guide for contributing to the Vera core engine.
 
