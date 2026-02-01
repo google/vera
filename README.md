@@ -59,16 +59,19 @@ Vera evaluates your AI feature in four steps:
 
    ```shell
    # Install the core engine from the local directory
-   uv pip install vera
+   uv pip install "git+https://github.com/google/vera.git#subdirectory=vera"
 
-   # Or from GitHub
-   uv add "git+https://github.com/google/vera.git#subdirectory=vera"
+   # Or if you already cloned the repo
+   uv pip install vera
    ```
 
 3. **Install an Example Plugin**:
    Vera requires plugins to define what to test. Let's install the SQL Query Assistant example.
 
    ```shell
+   uv pip install "git+https://github.com/google/vera.git#subdirectory=plugin_example/vera_sql_query_assistant"
+
+   # Or from the local folder
    uv pip install plugin_example/vera_sql_query_assistant
    ```
 
