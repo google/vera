@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import asyncio
+import io
 import logging
 from collections.abc import Iterable  # noqa: TC003
 from string import Template
@@ -20,13 +21,13 @@ from string import Template
 import anyio
 from rich.progress import Progress, TaskID  # noqa: TC002
 
+from vera.core.data_models.llm_sdk import LlmConfig
 from vera.hook_impl import hook_impl
 from vera.project_name import PROJECT_NAME
 
 from . import constants
 from .configuration import CONFIG
 from .data_models.csv import CsvColumn, CsvRow
-from .data_models.llm_config import LlmConfig  # noqa: TC001
 from .data_models.test_case import TestCase  # noqa: TC001
 from .data_models.test_case.input import TestCaseInput
 from .data_models.test_case.output import TestCaseOutput
@@ -44,16 +45,21 @@ def get_cli_service(progress: Progress, task_id: TaskID) -> RichCliService:
 
 
 @hook_impl
-async def llm_evaluation[T_Input: TestCaseInput, T_Output: TestCaseOutput](
+async def llm_evaluation[T_Input: TestCaseInput, T_Output: TestCaseOutput, T_LlmConfig: LlmConfig](
     test_case: TestCase[T_Input],
     test_output: T_Output,
     plugin_service: PluginService,
 ) -> CsvColumn:
     specs_path: anyio.Path = plugin_service.get_llm_specs_dir()
     specs: tuple[str, ...] = await plugin_service.get_spec_files(specs_dir=specs_path)
-    llm_config: LlmConfig = plugin_service.get_llm_configuration()
+    llm_config: T_LlmConfig = plugin_service.get_llm_configuration()
     async with plugin_service.get_llm_sdk(config=llm_config) as llm:
-        llm.add_system_prompts_to_session(*specs)
+        system_prompt: io.StringIO = io.StringIO()
+        for s in specs:
+            system_prompt.write(s)
+            system_prompt.write("\n\n")
+
+        llm.set_system_prompt_to_session(system_prompt.getvalue())
 
         resources_dir: anyio.Path = plugin_service.get_resources_dir()
         prompt: str = await plugin_service.create_evaluation_task_prompt(

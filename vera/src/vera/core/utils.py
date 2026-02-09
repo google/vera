@@ -14,7 +14,7 @@
 
 import asyncio
 import functools
-from typing import TYPE_CHECKING, Any, Literal, Protocol
+from typing import TYPE_CHECKING, Any, Literal, Protocol, runtime_checkable
 
 from vera.project_name import PROJECT_NAME
 
@@ -37,16 +37,18 @@ def create_plugin_name_display_repr(names: Iterable[str]) -> str:
     )
 
 
+@runtime_checkable
 class Taggable(Protocol):
-    tags: Iterable[str]
+    @property
+    def tags(self) -> Iterable[str]: ...
 
 
 def filter_taggables_by_tags[T: Taggable](taggables: Iterable[T], tags: Iterable[str]) -> list[T]:
-    tags_list: list[str] = list(tags)
-    if not tags_list:
+    tags_set: set[str] = set(tags)
+    if not tags_set:
         return list(taggables)
 
-    return [t for t in taggables if set(t.tags).intersection(tags_list)]
+    return [t for t in taggables if not tags_set.isdisjoint(t.tags)]
 
 
 def syncify[**P, R](

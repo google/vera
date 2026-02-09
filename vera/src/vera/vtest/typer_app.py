@@ -33,6 +33,7 @@ from rich.text import Text
 
 from vera.core import plugin_service, utils
 from vera.core.configuration import CONFIG
+from vera.core.data_models.test_case import TestCaseInput
 from vera.logger import setup_logging
 from vera.project_name import PROJECT_NAME
 
@@ -169,11 +170,13 @@ def _handle_logging(*, quiet: bool, verbose: bool) -> None:
         setup_logging(level="ERROR")
 
 
-def _get_filtered_test_cases(test_tags: list[str], pc: PluginCreation) -> Iterable[TestCase[Any]]:
+def _get_filtered_test_cases[T_Input: TestCaseInput](
+    test_tags: list[str], pc: PluginCreation
+) -> Iterable[TestCase[T_Input]]:
     logger.debug("Fetching test cases from plugin service")
-    test_cases: Iterable[TestCase[Any]] = pc.plugin_service.get_test_cases()
+    test_cases: Iterable[TestCase[T_Input]] = pc.plugin_service.get_test_cases()
     logger.debug("Filtering test cases with tags: %s", test_tags)
-    test_cases = utils.filter_taggables_by_tags(test_cases, test_tags)
+    test_cases: list[TestCase[T_Input]] = utils.filter_taggables_by_tags(test_cases, test_tags)
     logger.debug(
         "Found %s test cases after filtering",
         len(list(test_cases)) if hasattr(test_cases, "__len__") else "some",

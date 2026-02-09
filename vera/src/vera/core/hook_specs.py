@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from collections.abc import Iterable  # noqa: TC003
+from contextlib import AbstractAsyncContextManager  # noqa: TC003
 from typing import Protocol
 
 import anyio  # noqa: TC002
@@ -21,11 +22,11 @@ from pluggy import HookspecMarker
 from typer import Typer  # noqa: TC002
 
 from vera.core.configuration import VeraConfig  # noqa: TC001
+from vera.core.data_models.llm_config import LlmConfig
 from vera.project_name import PROJECT_NAME
 
 from .data_models.cli_service import CliService  # noqa: TC001
 from .data_models.csv import CsvColumn, CsvRow
-from .data_models.llm_config import LlmConfig  # noqa: TC001
 from .data_models.llm_sdk import LlmSdk  # noqa: TC001
 from .data_models.test_case import TestCase  # noqa: TC001
 from .data_models.test_case.input import TestCaseInput
@@ -96,12 +97,12 @@ class PluginService[T_Input: TestCaseInput, T_Output: TestCaseOutput, T_Row: Csv
 
     @staticmethod
     @hook_spec(firstresult=True)
-    def get_llm_configuration() -> LlmConfig:
+    def get_llm_configuration[T: LlmConfig]() -> T:
         """Returns the LLM configuration (model name, temperature, etc.) for the LLM Judge."""
 
     @staticmethod
     @hook_spec(firstresult=True)
-    def get_llm_sdk(config: LlmConfig) -> LlmSdk:
+    def get_llm_sdk[T: LlmConfig](config: T) -> AbstractAsyncContextManager[LlmSdk[T]]:
         """Returns the LLM context manager object."""
 
     @staticmethod

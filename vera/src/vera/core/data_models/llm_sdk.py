@@ -12,21 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import abc
 from contextlib import AbstractAsyncContextManager
-from typing import TYPE_CHECKING, Literal, Self, overload, override
+from typing import Literal, overload
 
 from pydantic import BaseModel
 
 from .llm_config import LlmConfig
 
-if TYPE_CHECKING:
-    from types import TracebackType
 
-
-class LlmSdk[T: LlmConfig](AbstractAsyncContextManager, abc.ABC):
-    def __init__(self, config: T) -> None:
-        self.config: T = config
+class LlmSdk[T_LlmConfig: LlmConfig](AbstractAsyncContextManager, abc.ABC):
+    def __init__(self, config: T_LlmConfig) -> None:
+        self.system_prompt: str = ""
+        self.config: T_LlmConfig = config
 
     @overload
     async def send_message[T_Schema: BaseModel](
@@ -66,23 +66,42 @@ class LlmSdk[T: LlmConfig](AbstractAsyncContextManager, abc.ABC):
         *,
         raise_error_if_empty_response: bool,
         response_json_schema: type[T_Schema] | None = None,
-    ) -> T_Schema | str: ...
+    ) -> T_Schema | str:
+        """Send a message to the LLM provider.
+
+        Args:
+            prompt: The prompt to send to the LLM provider.
+            raise_error_if_empty_response: Whether to raise an error if the response is empty.
+            response_json_schema: The JSON schema to validate the response against.
+
+        Returns:
+            The response from the LLM provider.
+
+        """
 
     @abc.abstractmethod
-    def clean_session_history(self) -> None: ...
-
-    @abc.abstractmethod
-    def add_system_prompts_to_session(self, *prompts: str) -> None: ...
-
-    @override
-    @abc.abstractmethod
-    async def __aenter__(self) -> Self: ...
-
-    @override
-    @abc.abstractmethod
-    async def __aexit__(
+    async def send_bulk_messages[T_Schema: BaseModel](
         self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> None: ...
+        prompts: list[str],
+        /,
+        *,
+        response_json_schema: type[T_Schema] | None = None,
+    ) -> list[T_Schema | str]:
+        """Send multiple messages to the LLM provider in bulk.
+
+        Args:
+            prompts: The prompts to send to the LLM provider.
+            response_json_schema: The JSON schema to validate the responses against.
+
+        Returns:
+            The responses from the LLM provider.
+
+        """
+
+    @abc.abstractmethod
+    def clean_session_history(self) -> None:
+        """Clean the session history."""
+
+    def set_system_prompt_to_session(self, prompt: str) -> None:
+        """Set the system prompt for the session."""
+        self.system_prompt = prompt
