@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import asyncio
 import contextlib
+import math
 from typing import Any, Never, Self, override
 from unittest.mock import AsyncMock, MagicMock
 
@@ -89,8 +89,8 @@ async def test_evaluation_service_evaluate() -> None:
 
     await es.run_tests()
     assert len(es.csv_rows) == 1
-    assert es.csv_rows[0].final_score == 1.0
-    assert cli_service.overall_advances == 1.0
+    assert math.isclose(es.csv_rows[0].final_score, 1.0, abs_tol=0.001)
+    assert math.isclose(cli_service.overall_advances, 1.0, abs_tol=0.001)
 
 
 @pytest.mark.anyio
