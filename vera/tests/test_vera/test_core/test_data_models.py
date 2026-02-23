@@ -103,8 +103,8 @@ def test_csv_row_logic() -> None:
     row = MockRow.from_columns(tc, out, llm_cols, static_cols)
     assert row.score == 5
     assert row.passed is True
-    assert row.final_score == 5.0
+    assert row.final_score == 5
 
     static_cols_fail = MockStaticColumn(passed=False)
     row_fail = MockRow.from_columns(tc, out, llm_cols, static_cols_fail)
-    assert row_fail.final_score == 0.0
+    assert row_fail.final_score == 0

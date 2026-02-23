@@ -10,7 +10,7 @@ requires-python = ">=3.14"
 license-files = ["LICENSE"]
 license = "Apache-2.0"
 dependencies = [
-    "anyio>=4.12.0",
+    "anyio>=4.12.1",
     "pydantic>=2.12.5",
     "pyyaml>=6.0.3",
     "vera>=1.0.0",
@@ -33,8 +33,8 @@ Repository = "https://github.com/google/vera"
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
-    "ruff>=0.15.0",
-    "ty>=0.0.15",
+    "ruff>=0.15.2",
+    "ty>=0.0.18",
 ]
 
 [project.entry-points.vera]

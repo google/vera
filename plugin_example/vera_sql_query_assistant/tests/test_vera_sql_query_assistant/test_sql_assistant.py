@@ -23,9 +23,9 @@ from vera_sql_query_assistant.core.utils import average, bool_score_to_int_score
 
 
 def test_average() -> None:
-    assert average(1, 2, 3, 4, 5) == 3.0
-    assert average(5, 5) == 5.0
-    assert average(1, 5) == 3.0
+    assert average(1, 2, 3, 4, 5) == 3
+    assert average(5, 5) == 5
+    assert average(1, 5) == 3
 
 
 def test_bool_score_to_int_score() -> None:
